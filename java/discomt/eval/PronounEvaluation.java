@@ -175,7 +175,7 @@ public class PronounEvaluation {
 				int m = s.matches.get(p);
 				int o = s.refoccurrences.get(p);
 				if(o > 0)
-					verbose(1, String.format("% 3d/% 3d  ", m, o));
+					verbose(1, String.format("%3d/%3d  ", m, o));
 				else
 					verbose(1, "  -/  -  ");
 				pronMatches.adjustOrPutValue(p, m, m);
@@ -184,7 +184,7 @@ public class PronounEvaluation {
 				docOccurrences += o;
 			}
 			ratio = ((float) docMatches) / ((float) docOccurrences);
-			verbose(1, String.format("% 3d/% 3d  %.4f\n", docMatches, docOccurrences, ratio));
+			verbose(1, String.format("%3d/%3d  %.4f\n", docMatches, docOccurrences, ratio));
 			totalMatches += docMatches;
 			totalOccurrences += docOccurrences;
 
@@ -195,16 +195,16 @@ public class PronounEvaluation {
 		for(String p : pronouns) {
 			int m = pronMatches.get(p);
 			int o = pronOccurrences.get(p);
-			verbose(1, String.format("% 3d/% 3d  ", m, o));
+			verbose(1, String.format("%3d/%3d  ", m, o));
 		}
 		float recall = ((float) totalMatches) / ((float) totalOccurrences);
-		verbose(1, String.format("% 3d/% 3d  %.4f\n", totalMatches, totalOccurrences, recall));
+		verbose(1, String.format("%3d/%3d  %.4f\n", totalMatches, totalOccurrences, recall));
 
 		float precision = ((float) totalMatches) / ((float) totalCandOccurrences);
 		float fscore = 2f * precision * recall / (precision + recall);
 
-		System.out.println(String.format("Precision: % 4d/% 4d  %.4f", totalMatches, totalCandOccurrences, precision));
-		System.out.println(String.format("Recall:    % 4d/% 4d  %.4f", totalMatches, totalOccurrences, recall));
+		System.out.println(String.format("Precision: %4d/%4d  %.4f", totalMatches, totalCandOccurrences, precision));
+		System.out.println(String.format("Recall:    %4d/%4d  %.4f", totalMatches, totalOccurrences, recall));
 		System.out.println(String.format("F1:                   %.4f", fscore));
 	}
 
