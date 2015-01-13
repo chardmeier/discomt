@@ -69,6 +69,9 @@ public class PronounEvaluation {
 			if(!isTriggerWord(srctoken))
 				continue;
 
+			// lowercase after checking so the abbreviation IT doesn't count as it
+			srctoken = srctoken.toLowerCase();
+
 			String[] reftgt = reference_.getSource().getAlignedElements(cidx);
 			refwords.clear();
 			for(String r : reftgt) {
