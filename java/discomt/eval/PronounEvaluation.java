@@ -131,7 +131,28 @@ public class PronounEvaluation {
 
 	public static void main(String[] args) throws IOException {
 		if(args.length != 3) {
-			System.err.println("Usage: PronounEvaluation reference candidate doc-boundaries");
+			System.err.println(
+			"Usage: PronounEvaluation reference candidate doc-starts\n\n" +
+			"   reference       reference translation as an aligned parallel corpus\n" +
+			"   candidate       candidate translation as an aligned parallel corpus\n" +
+			"   doc-boundaries  a file containing the sentence numbers where documents start\n\n" +
+			"Aligned parallel corpora should be supplied as triples of files:\n" +
+			"   NAME.en           English source text (tokenised, raw text, one segment per line)\n" +
+			"   NAME.fr           French translation (tokenised, raw text, one segment per line)\n" +
+			"   NAME.en-fr.alig   word alignments in Moses format\n" +
+			"On the command line, just specify the name stem NAME.\n\n" +
+			"The document start file should contain one line per document with the\n" +
+			"sentence number where the document starts (counted from 0).\n" +
+			"It may contain a second column with document IDs.\n\n" +
+			"This tool computes the pronoun evaluation precision and recall scores defined\n" +
+			"in the following paper:\n\n" +
+			"@inproceedings{Hardmeier:2010,\n" +
+			"    Author = {Christian Hardmeier and Marcello Federico},\n" +
+			"    Title = {Modelling Pronominal Anaphora in Statistical Machine Translation},\n" +
+			"    Booktitle = {Proceedings of the Seventh International Workshop on Spoken Language Translation (IWSLT)},\n" +
+			"    Address = {Paris (France)},\n" +
+			"    Pages = {283--289},\n" +
+			"    Year = {2010}}\n");
 			System.exit(1);
 		}
 
