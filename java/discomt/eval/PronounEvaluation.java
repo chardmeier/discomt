@@ -141,8 +141,6 @@ public class PronounEvaluation {
 		PronounEvaluation evalobj = new PronounEvaluation(args[0], args[1], args[2]);
 		List<DocumentSummary> eval = evalobj.evaluate();
 
-		PrintWriter out = new PrintWriter(System.out);
-
 		HashSet<String> pset = new HashSet<String>();
 		for(DocumentSummary s : eval)
 			pset.addAll(Arrays.asList(s.candoccurrences.keys(new String[0])));
