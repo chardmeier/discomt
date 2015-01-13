@@ -44,7 +44,7 @@ public class PronounEvaluation {
 		String line;
 		int docno = 0;
 		while((line = docrd.readLine()) != null) {
-			String[] f = line.split("\\s");
+			String[] f = line.split("\\s", 2);
 
 			String docid = null;
 			if(f.length == 2)
