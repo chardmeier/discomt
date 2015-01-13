@@ -51,7 +51,7 @@ public class PronounEvaluation {
 		}
 	}
 
-	public void evaluate(TIntArrayList docBoundaries, ArrayList<DocumentSummary> out) {
+	public void evaluate(ArrayList<DocumentSummary> out) {
 		int docno = 0;
 		int lastsentence = -1;
 		TObjectIntHashMap refwords = new TObjectIntHashMap();
@@ -133,6 +133,7 @@ public class PronounEvaluation {
 		PrintWriter out = new PrintWriter(System.out);
 
 		ArrayList<DocumentSummary> eval = new ArrayList<DocumentSummary>();
+		evalobj.evaluate(eval);
 
 		HashSet<String> pset = new HashSet<String>();
 		for(DocumentSummary s : eval)
