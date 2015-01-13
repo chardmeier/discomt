@@ -236,9 +236,9 @@ public class PronounEvaluation {
 		macroPrecision = ((float) pronouns.length) / macroPrecision;
 		macroRecall = ((float) pronouns.length) / macroRecall;
 		macroFscore = ((float) pronouns.length) / macroFscore;
-		System.out.println(String.format(
-			"\nMACRO                  %.4f               %.4f   %.4f\n",
-			macroPrecision, macroRecall, macroFscore));
+		//System.out.println(String.format(
+		//	"\nMACRO                  %.4f               %.4f   %.4f\n",
+		//	macroPrecision, macroRecall, macroFscore));
 	}
 
 	private static void verbose(int level, String s) {
