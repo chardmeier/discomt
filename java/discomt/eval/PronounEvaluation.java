@@ -18,7 +18,6 @@ import java.util.List;
 
 public class PronounEvaluation {
 	private final static int verbosity_ = Integer.parseInt(System.getProperty("eval.verbosity", "0"));
-	private final boolean debug_ = true;
 
 	private AlignedCorpus reference_;
 	private AlignedCorpus candidate_;
@@ -120,16 +119,6 @@ public class PronounEvaluation {
 
 	private boolean isTriggerWord(String w) {
 		return w.equals("it") || w.equals("they") || w.equals("It") || w.equals("They");
-	}
-
-	private void debug(String str) {
-		if(debug_)
-			System.err.print(str);
-	}
-
-	private void debugNL() {
-		if(debug_)
-			System.err.println("");
 	}
 
 	public static void main(String[] args) throws IOException {
