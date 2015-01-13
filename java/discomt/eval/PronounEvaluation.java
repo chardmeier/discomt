@@ -24,34 +24,30 @@ public class PronounEvaluation {
 	private TIntArrayList docBoundaries_;
 	private ArrayList<String> docIDs_;
 
-	public PronounEvaluation(String reffile, String candfile, String docfile) {
-		try {
-			reference_ = AlignedCorpus.loadCorpus(reffile);
-			candidate_ = AlignedCorpus.loadCorpus(candfile);
+	public PronounEvaluation(String reffile, String candfile, String docfile) throws IOException {
+		reference_ = AlignedCorpus.loadCorpus(reffile);
+		candidate_ = AlignedCorpus.loadCorpus(candfile);
 
-			docBoundaries_ = new TIntArrayList();
-			docIDs_ = new ArrayList<String>();
+		docBoundaries_ = new TIntArrayList();
+		docIDs_ = new ArrayList<String>();
 
-			BufferedReader docrd = new BufferedReader(new FileReader(docfile));
-			String line;
-			while((line = docrd.readLine()) != null) {
-				String[] f = line.split("\\s");
+		BufferedReader docrd = new BufferedReader(new FileReader(docfile));
+		String line;
+		while((line = docrd.readLine()) != null) {
+			String[] f = line.split("\\s");
 
-				String docid = null;
-				if(f.length == 2)
-					docid = f[1];
-				else if(f.length == 1)
-					docid = f[0];
-				else {
-					System.err.println("Invalid line in doc boundary file: " + line);
-					System.exit(1);
-				}
-
-				docBoundaries_.add(reference_.getSource().getSentenceStart(Integer.parseInt(f[0])));
-				docIDs_.add(docid);
+			String docid = null;
+			if(f.length == 2)
+				docid = f[1];
+			else if(f.length == 1)
+				docid = f[0];
+			else {
+				System.err.println("Invalid line in doc boundary file: " + line);
+				System.exit(1);
 			}
-		} catch(IOException e) {
-			throw new RuntimeException(e);
+
+			docBoundaries_.add(reference_.getSource().getSentenceStart(Integer.parseInt(f[0])));
+			docIDs_.add(docid);
 		}
 	}
 
@@ -126,7 +122,7 @@ public class PronounEvaluation {
 			System.err.println("");
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		if(args.length != 3) {
 			System.err.println("Usage: PronounEvaluation reference candidate doc-boundaries");
 			System.exit(1);
