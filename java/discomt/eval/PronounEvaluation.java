@@ -208,7 +208,7 @@ public class PronounEvaluation {
 		float totalPrecision = ((float) totalMatches) / ((float) totalCandOccurrences);
 		float totalFscore = 2f * totalPrecision * totalRecall / (totalPrecision + totalRecall);
 
-		System.out.println("Precision and recall per pronoun:\n");
+		System.out.println("Precision and recall per input pronoun:\n");
 		System.out.println("            Precision            Recall              F1\n");
 		float macroPrecision = .0f;
 		float macroRecall = .0f;
