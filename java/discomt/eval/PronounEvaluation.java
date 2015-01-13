@@ -56,7 +56,7 @@ public class PronounEvaluation {
 		int lastsentence = -1;
 		TObjectIntHashMap refwords = new TObjectIntHashMap();
 		for(int cidx = 0; cidx < reference_.getSource().getSize(); cidx++) {
-			while(cidx >= docBoundaries_.get(docno + 1));
+			while(cidx >= docBoundaries_.get(docno + 1))
 				docno++;
 
 			String srctoken = reference_.getSource().getElement(cidx);
