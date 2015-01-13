@@ -35,6 +35,7 @@ public class PronounEvaluation {
 
 		BufferedReader docrd = new BufferedReader(new FileReader(docfile));
 		String line;
+		int docno = 0;
 		while((line = docrd.readLine()) != null) {
 			String[] f = line.split("\\s");
 
@@ -42,7 +43,7 @@ public class PronounEvaluation {
 			if(f.length == 2)
 				docid = f[1];
 			else if(f.length == 1)
-				docid = f[0];
+				docid = "Document " + Integer.toString(docno);
 			else {
 				System.err.println("Invalid line in doc boundary file: " + line);
 				System.exit(1);
@@ -50,6 +51,7 @@ public class PronounEvaluation {
 
 			docBoundaries_.add(reference_.getSource().getSentenceStart(Integer.parseInt(f[0])));
 			summaries_.add(new DocumentSummary(docid));
+			docno++;
 		}
 		docBoundaries_.add(reference_.getSource().getSize());
 	}
@@ -146,7 +148,7 @@ public class PronounEvaluation {
 
 		verbose(1, "                    ");
 		for(String p : pronouns)
-			verbose(1, String.format("%7s  ", p));
+			verbose(1, String.format("%9s   ", p));
 		verbose(1, "\n");
 
 		TObjectIntHashMap<String> pronMatches = new TObjectIntHashMap<String>();
@@ -175,16 +177,16 @@ public class PronounEvaluation {
 				int m = s.matches.get(p);
 				int o = s.refoccurrences.get(p);
 				if(o > 0)
-					verbose(1, String.format("%3d/%3d  ", m, o));
+					verbose(1, String.format("%4d/%4d   ", m, o));
 				else
-					verbose(1, "  -/  -  ");
+					verbose(1, "   -/   -   ");
 				pronMatches.adjustOrPutValue(p, m, m);
 				pronOccurrences.adjustOrPutValue(p, o, o);
 				docMatches += m;
 				docOccurrences += o;
 			}
 			ratio = ((float) docMatches) / ((float) docOccurrences);
-			verbose(1, String.format("%3d/%3d  %.4f\n", docMatches, docOccurrences, ratio));
+			verbose(1, String.format("%4d/%4d   %.4f\n", docMatches, docOccurrences, ratio));
 			totalMatches += docMatches;
 			totalOccurrences += docOccurrences;
 
@@ -196,17 +198,19 @@ public class PronounEvaluation {
 		for(String p : pronouns) {
 			int m = pronMatches.get(p);
 			int o = pronOccurrences.get(p);
-			verbose(1, String.format("%3d/%3d  ", m, o));
+			verbose(1, String.format("%4d/%4d   ", m, o));
 		}
 		float recall = ((float) totalMatches) / ((float) totalOccurrences);
-		verbose(1, String.format("%3d/%3d  %.4f\n", totalMatches, totalOccurrences, recall));
+		verbose(1, String.format("%4d/%4d   %.4f\n\n", totalMatches, totalOccurrences, recall));
 
 		float precision = ((float) totalMatches) / ((float) totalCandOccurrences);
 		float fscore = 2f * precision * recall / (precision + recall);
 
-		System.out.println(String.format("Precision: %4d/%4d  %.4f", totalMatches, totalCandOccurrences, precision));
-		System.out.println(String.format("Recall:    %4d/%4d  %.4f", totalMatches, totalOccurrences, recall));
-		System.out.println(String.format("F1:                   %.4f", fscore));
+		System.out.println(String.format("Precision:   %4d/%4d    %.4f",
+			totalMatches, totalCandOccurrences, precision));
+		System.out.println(String.format("Recall:      %4d/%4d    %.4f",
+			totalMatches, totalOccurrences, recall));
+		System.out.println(String.format("F1:                       %.4f", fscore));
 	}
 
 	private static void verbose(int level, String s) {
