@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 public class PronounEvaluation {
 	private final static int verbosity_ = Integer.parseInt(System.getProperty("eval.verbosity", "0"));
@@ -22,14 +24,14 @@ public class PronounEvaluation {
 	private AlignedCorpus candidate_;
 
 	private TIntArrayList docBoundaries_;
-	private ArrayList<String> docIDs_;
+	private ArrayList<DocumentSummary> summaries_;
 
 	public PronounEvaluation(String reffile, String candfile, String docfile) throws IOException {
 		reference_ = AlignedCorpus.loadCorpus(reffile);
 		candidate_ = AlignedCorpus.loadCorpus(candfile);
 
 		docBoundaries_ = new TIntArrayList();
-		docIDs_ = new ArrayList<String>();
+		summaries_ = new ArrayList<DocumentSummary>();
 
 		BufferedReader docrd = new BufferedReader(new FileReader(docfile));
 		String line;
@@ -47,11 +49,12 @@ public class PronounEvaluation {
 			}
 
 			docBoundaries_.add(reference_.getSource().getSentenceStart(Integer.parseInt(f[0])));
-			docIDs_.add(docid);
+			summaries_.add(new DocumentSummary(docid));
 		}
+		docBoundaries_.add(reference_.getSource().getSize());
 	}
 
-	public void evaluate(ArrayList<DocumentSummary> out) {
+	public List<DocumentSummary> evaluate() {
 		int docno = 0;
 		int lastsentence = -1;
 		TObjectIntHashMap refwords = new TObjectIntHashMap();
@@ -68,15 +71,15 @@ public class PronounEvaluation {
 			refwords.clear();
 			for(String r : reftgt) {
 				refwords.adjustOrPutValue(r, 1, 1);
-				out.get(docno).refoccurrences.adjustOrPutValue(srctoken, 1, 1);
+				summaries_.get(docno).refoccurrences.adjustOrPutValue(srctoken, 1, 1);
 			}
 
 			String[] candtgt = candidate_.getSource().getAlignedElements(cidx);
 
 			for(String c : candtgt) {
-				out.get(docno).candoccurrences.adjustOrPutValue(srctoken, 1, 1);
+				summaries_.get(docno).candoccurrences.adjustOrPutValue(srctoken, 1, 1);
 				if(refwords.get(c) > 0) {
-					out.get(docno).matches.adjustOrPutValue(srctoken, 1, 1);
+					summaries_.get(docno).matches.adjustOrPutValue(srctoken, 1, 1);
 					refwords.adjustValue(c, -1);
 				}
 			}
@@ -106,6 +109,8 @@ public class PronounEvaluation {
 				System.out.println();
 			}
 		}
+
+		return summaries_;
 	}
 
 	private boolean isTriggerWord(String w) {
@@ -129,11 +134,9 @@ public class PronounEvaluation {
 		}
 
 		PronounEvaluation evalobj = new PronounEvaluation(args[0], args[1], args[2]);
+		List<DocumentSummary> eval = evalobj.evaluate();
 
 		PrintWriter out = new PrintWriter(System.out);
-
-		ArrayList<DocumentSummary> eval = new ArrayList<DocumentSummary>();
-		evalobj.evaluate(eval);
 
 		HashSet<String> pset = new HashSet<String>();
 		for(DocumentSummary s : eval)
