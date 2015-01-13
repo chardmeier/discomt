@@ -1,22 +1,18 @@
 package discomt.eval;
 
+import discomt.tools.AlignedCorpus;
+
 import gnu.trove.TIntArrayList;
 import gnu.trove.TIntProcedure;
 import gnu.trove.TObjectIntHashMap;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.regex.Pattern;
 
 public class PronounEvaluation {
 	private final static int verbosity_ = Integer.parseInt(System.getProperty("eval.verbosity", "0"));
