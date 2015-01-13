@@ -126,7 +126,7 @@ public class AlignedCorpus {
 
 	public static AlignedCorpus loadCorpus(String name) throws IOException {
 		String src = System.getProperty("coref.srclang", "en");
-		String tgt = System.getProperty("coref.tgtlang", "de");
+		String tgt = System.getProperty("coref.tgtlang", "fr");
 		LineNumberReader srcrd = new LineNumberReader(new FileReader(name + "." + src));
 		LineNumberReader tgtrd = new LineNumberReader(new FileReader(name + "." + tgt));
 		LineNumberReader aligrd = new LineNumberReader(new FileReader(name + "." + src + "-" + tgt + ".alig"));
