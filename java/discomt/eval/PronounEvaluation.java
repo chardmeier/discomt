@@ -29,6 +29,14 @@ public class PronounEvaluation {
 		reference_ = AlignedCorpus.loadCorpus(reffile);
 		candidate_ = AlignedCorpus.loadCorpus(candfile);
 
+		if(reference_.getSource().getSize() != candidate_.getSource().getSize()) {
+			System.err.println(String.format(
+				"Reference source size (%d) and candidate source size (%d) don't match.",
+				reference_.getSource().getSize(),
+				candidate_.getSource().getSize()));
+			System.exit(1);
+		}
+
 		docBoundaries_ = new TIntArrayList();
 		summaries_ = new ArrayList<DocumentSummary>();
 
@@ -136,17 +144,19 @@ public class PronounEvaluation {
 		String[] pronouns = pset.toArray(new String[0]);
 		Arrays.sort(pronouns);
 
+		verbose(1, "Pronoun translation recall per document:\n");
 		verbose(1, "                    ");
 		for(String p : pronouns)
 			verbose(1, String.format("%9s   ", p));
 		verbose(1, "\n");
 
 		TObjectIntHashMap<String> pronMatches = new TObjectIntHashMap<String>();
-		TObjectIntHashMap<String> pronOccurrences = new TObjectIntHashMap<String>();
+		TObjectIntHashMap<String> pronRefOccurrences = new TObjectIntHashMap<String>();
+		TObjectIntHashMap<String> pronCandOccurrences = new TObjectIntHashMap<String>();
 
 		float ratio;
 		int totalMatches = 0;
-		int totalOccurrences = 0;
+		int totalRefOccurrences = 0;
 
 		class CandCounter implements TIntProcedure {
 			public int count = 0;
@@ -161,24 +171,26 @@ public class PronounEvaluation {
 
 		for(DocumentSummary s : eval) {
 			int docMatches = 0;
-			int docOccurrences = 0;
+			int docRefOccurrences = 0;
 			verbose(1, String.format("%18s  ", s.docid));
 			for(String p : pronouns) {
 				int m = s.matches.get(p);
-				int o = s.refoccurrences.get(p);
-				if(o > 0)
-					verbose(1, String.format("%4d/%4d   ", m, o));
+				int ro = s.refoccurrences.get(p);
+				int co = s.candoccurrences.get(p);
+				if(ro > 0)
+					verbose(1, String.format("%4d/%4d   ", m, ro));
 				else
 					verbose(1, "   -/   -   ");
 				pronMatches.adjustOrPutValue(p, m, m);
-				pronOccurrences.adjustOrPutValue(p, o, o);
+				pronRefOccurrences.adjustOrPutValue(p, ro, ro);
+				pronCandOccurrences.adjustOrPutValue(p, co, co);
 				docMatches += m;
-				docOccurrences += o;
+				docRefOccurrences += ro;
 			}
-			ratio = ((float) docMatches) / ((float) docOccurrences);
-			verbose(1, String.format("%4d/%4d   %.4f\n", docMatches, docOccurrences, ratio));
+			ratio = ((float) docMatches) / ((float) docRefOccurrences);
+			verbose(1, String.format("%4d/%4d   %.4f\n", docMatches, docRefOccurrences, ratio));
 			totalMatches += docMatches;
-			totalOccurrences += docOccurrences;
+			totalRefOccurrences += docRefOccurrences;
 
 			s.candoccurrences.forEachValue(candCounter);
 		}
@@ -187,20 +199,46 @@ public class PronounEvaluation {
 		verbose(1, "                    ");
 		for(String p : pronouns) {
 			int m = pronMatches.get(p);
-			int o = pronOccurrences.get(p);
+			int o = pronRefOccurrences.get(p);
 			verbose(1, String.format("%4d/%4d   ", m, o));
 		}
-		float recall = ((float) totalMatches) / ((float) totalOccurrences);
-		verbose(1, String.format("%4d/%4d   %.4f\n\n", totalMatches, totalOccurrences, recall));
+		float totalRecall = ((float) totalMatches) / ((float) totalRefOccurrences);
+		verbose(1, String.format("%4d/%4d   %.4f\n\n", totalMatches, totalRefOccurrences, totalRecall));
 
-		float precision = ((float) totalMatches) / ((float) totalCandOccurrences);
-		float fscore = 2f * precision * recall / (precision + recall);
+		float totalPrecision = ((float) totalMatches) / ((float) totalCandOccurrences);
+		float totalFscore = 2f * totalPrecision * totalRecall / (totalPrecision + totalRecall);
 
-		System.out.println(String.format("Precision:   %4d/%4d    %.4f",
-			totalMatches, totalCandOccurrences, precision));
-		System.out.println(String.format("Recall:      %4d/%4d    %.4f",
-			totalMatches, totalOccurrences, recall));
-		System.out.println(String.format("F1:                       %.4f", fscore));
+		System.out.println("Precision and recall per pronoun:\n");
+		System.out.println("            Precision            Recall              F1\n");
+		float macroPrecision = .0f;
+		float macroRecall = .0f;
+		float macroFscore = .0f;
+		for(String p : pronouns) {
+			int m = pronMatches.get(p);
+			int ro = pronRefOccurrences.get(p);
+			int co = pronCandOccurrences.get(p);
+			float precision = ((float) m) / ((float) co);
+			float recall = ((float) m) / ((float) ro);
+			float fscore = 2f * precision * recall / (precision + recall);
+			System.out.println(String.format(
+				"%8s   %4d/%4d   %.4f   %4d/%4d   %.4f   %.4f",
+				p, m, co, precision, m, ro, recall, fscore));
+
+			macroPrecision += 1f / precision;
+			macroRecall += 1f / recall;
+			macroFscore += 1f / fscore;
+		}
+		System.out.println(String.format(
+			"\nTOTAL      %4d/%4d   %.4f   %4d/%4d   %.4f   %.4f",
+			totalMatches, totalCandOccurrences, totalPrecision,
+			totalMatches, totalRefOccurrences, totalRecall, totalFscore));
+
+		macroPrecision = ((float) pronouns.length) / macroPrecision;
+		macroRecall = ((float) pronouns.length) / macroRecall;
+		macroFscore = ((float) pronouns.length) / macroFscore;
+		System.out.println(String.format(
+			"\nMACRO                  %.4f               %.4f   %.4f\n",
+			macroPrecision, macroRecall, macroFscore));
 	}
 
 	private static void verbose(int level, String s) {
