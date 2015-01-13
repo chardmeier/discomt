@@ -192,6 +192,7 @@ public class PronounEvaluation {
 		}
 		int totalCandOccurrences = candCounter.count;
 
+		verbose(1, "                    ");
 		for(String p : pronouns) {
 			int m = pronMatches.get(p);
 			int o = pronOccurrences.get(p);
