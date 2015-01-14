@@ -49,7 +49,7 @@ transform='
 
 		print "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" >SENTENCES;
 		print "<!DOCTYPE markables SYSTEM \"markables.dtd\">" >SENTENCES;
-		print "<markables xmlns=\"www.eml.org/NameSpaces/smtsentence\">" >SENTENCES;
+		print "<markables xmlns=\"www.eml.org/NameSpaces/sentence\">" >SENTENCES;
 	}
 
 	{
@@ -58,7 +58,7 @@ transform='
 			print "<word id=\"word_" widx++ "\">" escape($i) "</word>" >WORDS;
 		lastword = widx - 1;
 
-		print "<markable mmax_level=\"smtsentence\" orderid=\"" sidx "\" id=\"markable_" sidx++ "\" span=\"word_" firstword "..word_" lastword "\" />" >SENTENCES;
+		print "<markable mmax_level=\"sentence\" orderid=\"" sidx "\" id=\"markable_" sidx++ "\" span=\"word_" firstword "..word_" lastword "\" />" >SENTENCES;
 	}
 
 	END {
@@ -83,7 +83,7 @@ do
 		gawk "$remove_last_if_empty" |
 		$xml unesc |
 		$tokeniser 2>/dev/null |
-		gawk -v WORDS=$dir/Basedata/${name}_words.xml -v SENTENCES=$dir/markables/${name}_smtsentence_level.xml "$transform"
+		gawk -v WORDS=$dir/Basedata/${name}_words.xml -v SENTENCES=$dir/markables/${name}_sentence_level.xml "$transform"
 
 	cat <<EOF >$dir/$name.mmax
 <?xml version="1.0" encoding="UTF-8"?>
