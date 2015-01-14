@@ -9,8 +9,8 @@ fi
 xmlcorpus=$1
 dir=$2
 
-mmax_skeleton=/usit/abel/u1/chm/mmax-import/mmax-skeleton
-xml=/usit/abel/u1/chm/bin/xml
+mmax_skeleton=${DISCOMT_HOME:-..}/mmax-import/mmax-skeleton
+xml=xml
 #tokeniser="/usit/abel/u1/chm/WMT2013.en-fr/tokeniser/tokenizer.perl -l en"
 tokeniser=cat
 
