@@ -1,0 +1,22 @@
+This package contains software to compute the MT pronoun precision/recall score
+described by Hardmeier and Federico (IWSLT 2010).
+
+To run it, set the environment variable DISCOMT_HOME to the directory
+containing this README file and start eval.sh. Run the tool without
+arguments to see more detailed usage information.
+
+Note that pronoun precision/recall is NOT the official evaluation score of the
+DiscoMT workshop and that it has some well-known weaknesses, most notably that
+it just matches pronouns against the reference translation without taking into
+consideration the antecedent translations actually occurring in the candidate
+translation. As such, the information extracted from the gold standard is not
+necessarily correct for a particular candidate translation, so the score
+should be taken with a grain of salt.
+
+The scripts in the mmax-import directory may be useful to convert SMT input data
+into the annotated MMAX format that can be read by the document-level SMT decoder
+Docent. They are not used by the pronoun scorer.
+
+10 April 2015
+Christian Hardmeier
+Uppsala University
