@@ -230,7 +230,7 @@ public class AlignedCorpus {
 			}
 
 			String[] links = aligline.split(" ");
-			if(aligline != "") {
+			if(!aligline.isEmpty()) {
 				for(int i = 0; i < links.length; i++) {
 					String[] st = links[i].split("-");
 					if(st.length != 2)
